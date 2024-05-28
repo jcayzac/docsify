@@ -8,8 +8,6 @@ export function routerMixin(proto) {
   proto.route = {};
 }
 
-let lastRoute = {};
-
 function updateRender(vm) {
   vm.router.normalize();
   vm.route = vm.router.parse();
@@ -29,19 +27,19 @@ export function initRouter(vm) {
 
   vm.router = router;
   updateRender(vm);
-  lastRoute = vm.route;
+  vm.lastRoute = vm.route;
 
   // eslint-disable-next-line no-unused-vars
   router.onchange(params => {
     updateRender(vm);
     vm._updateRender();
 
-    if (lastRoute.path === vm.route.path) {
+    if (vm.lastRoute.path === vm.route.path) {
       vm.$resetEvents(params.source);
       return;
     }
 
     vm.$fetch(noop, vm.$resetEvents.bind(vm, params.source));
-    lastRoute = vm.route;
+    vm.lastRoute = vm.route;
   });
 }
